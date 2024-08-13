@@ -7,21 +7,27 @@ import (
 	"os"
 	"strings"
 
-	"Ascii-Output/functions"
+	"ascii-artoutput/functions"
 )
 
 func main() {
+	usageMessage1 := `Usage: go run . [OPTION] [STRING] [BANNER]
+EX: go run . --output=<fileName.txt> something standard`
 	ar := os.Args[1]
 	if strings.HasPrefix(ar, "-") && !strings.HasPrefix(ar, "--") {
-		fmt.Println("Usage: go run . [OPTION] [STRING] [BANNER]")
-		fmt.Println("EX: go run . --output=<fileName.txt> something standard")
-		fmt.Printf("EXPECING: --")
+		fmt.Println(usageMessage1)
+		fmt.Println("EXPECING: --")
 		os.Exit(1)
 	}
 	if strings.HasPrefix(ar, "--") && !strings.Contains(ar, "=") {
-		fmt.Println("Usage: go run . [OPTION] [STRING] [BANNER]")
-		fmt.Println("EX: go run . --output=<fileName.txt> something standard")
+		fmt.Println(usageMessage1)
 		fmt.Println("EXPECTING: =")
+		os.Exit(1)
+	}
+
+	if strings.Contains(ar, "=") && !strings.Contains(ar, ".txt") {
+		fmt.Println(usageMessage1)
+		fmt.Println("EXPECING: .txt file extension")
 		os.Exit(1)
 	}
 	// Define the output flag
@@ -37,7 +43,9 @@ func main() {
 
 	// Validate the number of arguments. Expect 1 or 2 arguments: the input string and optionally the font file
 	if len(args) == 0 || len(args) > 2 {
+		fmt.Println("Check number of arguments")
 		log.Fatal(usageMessage)
+
 		return
 	}
 
@@ -62,8 +70,6 @@ func main() {
 	inputString = strings.ReplaceAll(inputString, "\\n", "\n")
 	// Split the input string into words using newline as the delimiter
 	words := strings.Split(inputString, "\n")
-	// Create a slice to hold the concatenated lines of ASCII art
-	concatenatedLines := make([]string, 8)
 
 	// Open the output file if specified
 	var outputFile *os.File
@@ -89,6 +95,8 @@ func main() {
 			}
 			continue
 		}
+		// Create a slice to hold the concatenated lines of ASCII art for this word
+		concatenatedLines := make([]string, 8)
 
 		// Process each character in the word
 		for _, char := range word {
